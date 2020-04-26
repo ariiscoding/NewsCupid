@@ -5,16 +5,19 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
+import he.quanzhao.tinnews.model.Article;
 import he.quanzhao.tinnews.model.NewsResponse;
 import he.quanzhao.tinnews.repository.NewsRepository;
 
 public class SearchViewModel extends ViewModel {
     private final NewsRepository repository;
     private final MutableLiveData<String> searchInput;
+    private final MutableLiveData<Article> favoriteArticleInput;
 
     public SearchViewModel(NewsRepository repository) {
         this.repository = repository;
         searchInput = new MutableLiveData<>();
+        favoriteArticleInput = new MutableLiveData<Article>();
     }
 
     public void setSearchInput(String query) {
@@ -30,4 +33,18 @@ public class SearchViewModel extends ViewModel {
             //  return repository.searchNews(input);
             //});
     }
+
+    public LiveData<Boolean> onFavorite() {
+        return Transformations.switchMap(favoriteArticleInput, repository::favoriteArticle);
+    }
+
+    public void onCancel() {
+        repository.onCancel();
+    }
+
+    public void setFavoriteArticleInput (Article article) {
+        favoriteArticleInput.setValue(article);
+    }
+
+
 }

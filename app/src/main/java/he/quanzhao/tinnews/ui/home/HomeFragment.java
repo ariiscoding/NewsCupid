@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.mindorks.placeholderview.SwipeDecor;
 
@@ -21,10 +22,13 @@ import he.quanzhao.tinnews.model.Article;
 import he.quanzhao.tinnews.repository.NewsRepository;
 import he.quanzhao.tinnews.repository.NewsViewModelFactory;
 
+import static android.widget.Toast.LENGTH_SHORT;
+
+
 /**
  * A simple {@link Fragment} subclass.
  */
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements TinNewsCard.OnSwipeListener {
 
     private HomeViewModel viewModel;
     private FragmentHomeBinding binding;
@@ -70,10 +74,37 @@ public class HomeFragment extends Fragment {
                     if (newsResponse != null) {
                         Log.d("HomeFragment", newsResponse.toString());
                         for(Article article : newsResponse.articles) {
-                            TinNewsCard tinNewsCard = new TinNewsCard(article);
+                            TinNewsCard tinNewsCard = new TinNewsCard(article, this);
                             binding.swipeView.addView(tinNewsCard);
                         }
                     }
                         });
+
+
+            viewModel.onFavorite().observe(getViewLifecycleOwner(), isSuccess -> {
+                if (isSuccess) {
+                    Toast.makeText(getContext(), "Success", LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getContext(), "You might have like this before", LENGTH_SHORT).show();
+                }
+            });
+    }
+
+    @Override
+    public void onLike(Article article) {
+        viewModel.setFavoriteArticleInput(article);
+    }
+
+    @Override
+    public void onDislike(Article article) {
+        if(binding.swipeView.getChildCount() < 3) { //if the view has fewer than 3 elements, call the API again.
+            viewModel.setCountryInput("us");
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        viewModel.onCancel();
     }
 }

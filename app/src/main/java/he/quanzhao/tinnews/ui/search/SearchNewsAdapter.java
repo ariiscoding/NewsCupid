@@ -19,6 +19,11 @@ import he.quanzhao.tinnews.model.Article;
 
 public class SearchNewsAdapter extends RecyclerView.Adapter<SearchNewsAdapter.SearchNewsViewHolder> {
     private List<Article> articles = new ArrayList<>();
+    private LikeListener likeListener;
+
+    public void setLikeListener(LikeListener likeListener) {
+        this.likeListener = likeListener;
+    }
 
     public void setArticles(List<Article> articles) {
         this.articles.clear();
@@ -37,8 +42,26 @@ public class SearchNewsAdapter extends RecyclerView.Adapter<SearchNewsAdapter.Se
     public void onBindViewHolder(@NonNull SearchNewsViewHolder holder, int position) {
         Article article = articles.get(position);
         holder.title.setText(article.title);
-        Picasso.get().load(article.urlToImage).into(holder.newsImage);
-        holder.favorite.setImageResource(R.drawable.ic_favorite_border_black_24dp);
+
+        if (article.urlToImage==null) {
+            holder.newsImage.setImageResource(R.drawable.ic_empty_image);
+        } else {
+            Picasso.get().load(article.urlToImage).into(holder.newsImage);
+        }
+
+        if (article.favorite) {
+            holder.favorite.setImageResource(R.drawable.ic_favorite_black_24dp);
+            holder.favorite.setOnClickListener(null); //to avoid duplicate favorites
+        } else {
+            holder.favorite.setImageResource(R.drawable.ic_favorite_border_black_24dp);
+            holder.favorite.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    article.favorite = true;
+                    likeListener.onLike(article);
+                }
+            });
+        }
     }
 
     @Override
@@ -58,5 +81,10 @@ public class SearchNewsAdapter extends RecyclerView.Adapter<SearchNewsAdapter.Se
             favorite = itemView.findViewById(R.id.favorite);
             title = itemView.findViewById(R.id.title);
         }
+    }
+
+    interface LikeListener {
+        void onLike(Article article);
+        void onClick (Article article);
     }
 }

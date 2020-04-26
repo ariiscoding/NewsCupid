@@ -13,11 +13,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Toast;
 
 import he.quanzhao.tinnews.R;
 import he.quanzhao.tinnews.databinding.FragmentSearchBinding;
+import he.quanzhao.tinnews.model.Article;
 import he.quanzhao.tinnews.repository.NewsRepository;
 import he.quanzhao.tinnews.repository.NewsViewModelFactory;
+
+import static android.widget.Toast.LENGTH_SHORT;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -47,6 +51,17 @@ public class SearchFragment extends Fragment {
 
         //specifying layout & initializing the view
         SearchNewsAdapter newsAdapter = new SearchNewsAdapter();
+        newsAdapter.setLikeListener(new SearchNewsAdapter.LikeListener() {
+            @Override
+            public void onLike(Article article) {
+                viewModel.setFavoriteArticleInput(article);
+            }
+
+            @Override
+            public void onClick(Article article) {
+                //TODO
+            }
+        });
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 2);
         gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
@@ -80,6 +95,14 @@ public class SearchFragment extends Fragment {
                                 Log.d("SearchFragment", newsResponse.toString());
                             }
                         });
+        viewModel.onFavorite().observe(getViewLifecycleOwner(), isSuccess -> {
+            if (isSuccess) {
+                Toast.makeText(requireActivity(), "Success", LENGTH_SHORT).show();
+                newsAdapter.notifyDataSetChanged(); //update view
+            } else {
+                Toast.makeText(requireActivity(), "You might have liked this before", LENGTH_SHORT).show();
+            }
+        });
 
     }
 }
