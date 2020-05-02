@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
         navController = navHostFragment.getNavController();
 
         NavigationUI.setupWithNavController(navView, navController);
-        NavigationUI.setupActionBarWithNavController(this, navController); //update the top action bar and sync it with the current 
+        //NavigationUI.setupActionBarWithNavController(this, navController); //update the top action bar and sync it with the current
 
 
         //the following is test code
