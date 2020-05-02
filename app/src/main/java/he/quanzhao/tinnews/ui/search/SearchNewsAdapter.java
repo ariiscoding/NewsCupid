@@ -62,6 +62,12 @@ public class SearchNewsAdapter extends RecyclerView.Adapter<SearchNewsAdapter.Se
                 }
             });
         }
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick (View view) {
+                likeListener.onClick(article);
+            }
+        });
     }
 
     @Override

@@ -7,6 +7,8 @@ import android.util.Log;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import java.util.List;
+
 import he.quanzhao.tinnews.TinNewsApplication;
 import he.quanzhao.tinnews.database.AppDatabase;
 import he.quanzhao.tinnews.model.Article;
@@ -104,6 +106,16 @@ public class NewsRepository {
         if(asyncTask != null) {
             asyncTask.cancel(true);
         }
+    }
+
+    public LiveData<List<Article>> getAllSavedArticles() {
+        return database.dao().getAllArticles();
+    }
+
+    public void deleteSavedArticle (Article article) {
+        AsyncTask.execute (
+                () -> database.dao().deleteArticle(article)
+        );
     }
 
 }

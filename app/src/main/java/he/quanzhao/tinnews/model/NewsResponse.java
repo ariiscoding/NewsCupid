@@ -1,5 +1,7 @@
 package he.quanzhao.tinnews.model;
 
+import androidx.lifecycle.LiveData;
+
 import java.util.List;
 import java.util.Objects;
 
